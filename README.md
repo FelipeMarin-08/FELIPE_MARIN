@@ -101,7 +101,10 @@ Keep building. Keep learning. 🚀
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/FelipeMarin-08/FelipeMarin-08/output/github-contribution-grid-snake.gif" alt="Snake animation"/>
+<img
+  src="https://raw.githubusercontent.com/FelipeMarin-08/FelipeMarin-08/output/github-contribution-snake-grow.gif"
+  alt="Growing contribution snake"
+/>
 
 </div>
 ---
