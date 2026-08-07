@@ -1,474 +1,129 @@
-# Felipe Marin Silva
+<div align="center">
 
-```text
-                         ___
-                     .-'   `'.
-                    /         \
-                   /  _     _  \
-                  |  / \   / \  |
-                  |  \_/   \_/  |
-                   \     ^     /
-                    '.  ___  .'
-                      '-._.-'
-                   ___ /   \ ___
-              _.-'    /     \    '-._
-          _.-'       /       \       '-._
-       .-'          /         \          '-.
-      /            /           \            \
-     /____________/             \____________\
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=220&color=0:000000,100:292929&text=FELIPE%20MARIN%20SILVA&fontSize=48&fontColor=ffffff&animation=fadeIn&fontAlignY=38"/>
 
-                    F E L I P E
-                 BACK-END DEVELOPER
-```
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=22&duration=2500&pause=900&color=FFFFFF&center=true&vCenter=true&width=800&lines=BACK-END+DEVELOPER;PYTHON+%7C+FASTAPI+%7C+JAVA+%7C+SPRING+BOOT;POSTGRESQL+%7C+DOCKER+%7C+REST+APIs;BUILDING+REAL+SOLUTIONS+WITH+CODE"/>
+
+</div>
 
 ---
 
-```bash
-╭──────────────────────────────────────╮
-│         FELIPE SYSTEM v1.0           │
-╰──────────────────────────────────────╯
-
-Initializing developer environment...
-
-████████████████████ 100%
-
-✔ Backend engine activated
-✔ Python / FastAPI loaded
-✔ Java / Spring Boot loaded
-✔ PostgreSQL connected
-✔ Docker environment ready
-✔ React / TypeScript loaded
-✔ REST API layer online
-✔ Full Stack mode enabled
-
-STATUS: BUILDING 🚀
-```
-
----
+## 👨‍💻 About Me
 
 ```java
 public class Felipe {
 
     String name = "Felipe Marin Silva";
     String role = "Back-end Developer";
-    String focus = "Backend Development";
-
     String company = "Contabiliza";
-    String since = "June 2026";
 
-    String location = "Paraná, Brazil 🇧🇷";
-
-    String[] backend = {
-        "Python",
-        "FastAPI",
-        "Java",
-        "Spring Boot",
-        "SQLAlchemy",
-        "Pydantic",
-        "REST APIs"
-    };
-
-    String[] frontend = {
-        "React",
-        "Next.js",
-        "TypeScript",
-        "JavaScript",
-        "HTML",
-        "CSS"
-    };
-
-    String[] database = {
-        "PostgreSQL",
-        "SQL",
-        "Alembic"
-    };
-
-    String[] asyncProcessing = {
-        "Celery",
-        "Redis",
-        "Celery Beat"
-    };
-
-    String[] devOps = {
-        "Docker",
-        "Docker Compose",
-        "Git",
-        "GitHub",
-        "Vercel",
-        "Nginx"
+    String[] focus = {
+        "Backend Engineering",
+        "REST APIs",
+        "Automation",
+        "Software Architecture"
     };
 
     String mission =
-        "Turning real business problems into reliable software.";
+        "Transforming real business problems into reliable software.";
 }
 ```
 
----
-
-|                        |                                        |
-| ---------------------- | -------------------------------------- |
-| 💻 **Current Role**    | Back-end Developer                     |
-| 🏢 **Company**         | Contabiliza                            |
-| ⚙️ **Main Focus**      | Backend Development                    |
-| 🐍 **Core Stack**      | Python · FastAPI · PostgreSQL          |
-| ☕ **Java Stack**       | Java · Spring Boot                     |
-| 🌐 **Full Stack**      | React · TypeScript · Next.js           |
-| 🗄️ **Database**       | PostgreSQL · SQLAlchemy · Alembic      |
-| ⚡ **Async Processing** | Celery · Redis                         |
-| 🐳 **DevOps**          | Docker · Docker Compose · Git · GitHub |
-| 🎓 **Education**       | Software Engineering                   |
-| 📍 **Location**        | Paraná, Brazil 🇧🇷                    |
-
-Currently working as a **Back-end Developer at Contabiliza**, building internal applications, REST APIs, fiscal automation systems, document-processing solutions and business process automations.
-
-My main focus is **Backend Engineering**, but I also work across the stack when the project requires it.
+* 💻 Back-end Developer at **Contabiliza**
+* 🎓 Software Engineering student at **UniFil**
+* 📍 Paraná, Brazil 🇧🇷
+* ⚙️ Focused on **Backend Development, APIs and Automation**
+* 🚀 Building production applications and internal business solutions
 
 ---
 
-# ⚙️ Tech Stack
-
-### Backend
-
-`Python` `FastAPI` `Java` `Spring Boot` `Pydantic` `SQLAlchemy` `REST APIs`
-
-### Frontend
-
-`React` `Next.js` `TypeScript` `JavaScript` `HTML` `CSS` `Vite`
-
-### Database
-
-`PostgreSQL` `SQL` `SQLAlchemy` `Alembic`
-
-### Async & Processing
-
-`Celery` `Redis` `Celery Beat`
-
-### PDF & Automation
-
-`PyMuPDF` `pdfplumber` `ReportLab` `Tesseract OCR` `Pillow`
-
-### DevOps & Infrastructure
-
-`Docker` `Docker Compose` `Nginx` `Vercel` `Git` `GitHub` `WSL2` `PowerShell`
-
-### Testing & Quality
-
-`Pytest` `Vitest` `Playwright` `ESLint` `Ruff` `Mypy` `TypeScript`
-
----
-
-# 🚀 Projects
-
-| 🚀 Project                    | 💡 Description                                                                                                 | ⚙️ Stack                                                                     |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| **Fiscal PDF Hub**            | Internal platform for fiscal PDF ingestion, classification, validation, review, reporting and secure retention | Python · FastAPI · PostgreSQL · React · TypeScript · Celery · Redis · Docker |
-| **PGDAS-D Report Automation** | Automated processing of PGDAS-D documents and generation of visual Simples Nacional reports                    | Next.js · React · TypeScript · FastAPI · Python · Docker                     |
-| **EnergyTracker**             | Smart energy monitoring solution focused on real-time consumption analysis                                     | Software Engineering                                                         |
-| **SafeAI**                    | Software solution for insurance policy management                                                              | Software Engineering                                                         |
-| **Banco Digital**             | Digital banking project developed using object-oriented programming concepts                                   | Java                                                                         |
-
----
-
-## 🧾 Fiscal PDF Hub
-
-> Internal fiscal document processing and workflow platform.
-
-A project developed in the professional environment at **Contabiliza** to automate the processing and management of fiscal reports.
-
-```text
-PDF / ZIP
-   │
-   ▼
-FastAPI
-   │
-   ├── PostgreSQL
-   │
-   ├── Celery
-   │      │
-   │      ▼
-   │     Redis
-   │
-   ▼
-Fiscal Parser
-   │
-   ├── Classification
-   ├── Validation
-   ├── Findings
-   └── Human Review
-   │
-   ▼
-Visual Reports
-   │
-   ▼
-Secure Backup
-```
-
-### Main technologies
-
-`Python`
-`FastAPI`
-`PostgreSQL`
-`SQLAlchemy`
-`Alembic`
-`Celery`
-`Redis`
-`React`
-`TypeScript`
-`Vite`
-`Docker`
-`Docker Compose`
-`Nginx`
-`PyMuPDF`
-`Tesseract OCR`
-`ReportLab`
-
-### What I worked with
-
-* Fiscal PDF ingestion and processing
-* REST API development
-* PostgreSQL persistence
-* Database migrations
-* Asynchronous task processing
-* PDF parsing and structured data extraction
-* Fiscal information validation
-* Human review workflows
-* SHA-256 based document idempotency
-* Batch processing
-* Visual PDF report generation
-* Authentication and access control
-* Protected downloads
-* Backup workflows
-* Data integrity validation
-* Dockerized environments
-* Automated testing
-* Production deployment and validation
-
----
-
-## 📄 PGDAS-D Report Automation
-
-> Automation of PGDAS-D document processing and visual Simples Nacional report generation.
-
-Full Stack application developed to transform technical information from **PGDAS-D / Simples Nacional PDFs** into visual reports that are easier to analyze and present.
-
-```text
-PGDAS-D PDF
-     │
-     ▼
-  FastAPI
-     │
-     ▼
-PDF Extraction
-     │
-     ├── PyMuPDF
-     └── pdfplumber
-     │
-     ▼
-Fiscal Parser
-     │
-     ▼
-Indicators & Calculations
-     │
-     ▼
-ReportLab
-     │
-     ▼
-Visual PDF Report
-     │
-     ▼
-React / Next.js
-```
-
-### Stack
-
-`Next.js`
-`React`
-`TypeScript`
-`Python`
-`FastAPI`
-`Pydantic`
-`PyMuPDF`
-`pdfplumber`
-`ReportLab`
-`PostgreSQL`
-`SQLAlchemy`
-`Alembic`
-`Docker`
-`Docker Compose`
-`Vercel`
-
-### Main features
-
-* Automatic PGDAS-D PDF reading
-* Simples Nacional data extraction
-* Monthly revenue analysis
-* Last 12 months revenue analysis
-* DAS calculation data
-* Effective tax rate
-* Tax composition
-* Fator R
-* Payroll information
-* Simples Nacional annex identification
-* Financial indicators
-* Visual charts and cards
-* Batch PDF processing
-* Controlled concurrency
-* Individual retry handling
-* Drag-and-drop upload
-* Direct file-system integration
-* Automatic report naming
-* Local persistence with IndexedDB
-* Processing history
-* Automated testing
-
-### Production
-
-```text
-https://relatorios.contabiliza.com.br
-```
-
----
-
-## ⚡ Some Engineering Challenges
-
-```text
-> Processing hundreds of fiscal documents
-
-[██████████] PDF ingestion
-[██████████] Parsing
-[██████████] Validation
-[██████████] Persistence
-[██████████] Async processing
-[██████████] Report generation
-[██████████] Backup
-[██████████] Testing
-```
-
-Working on real internal systems has given me practical experience with problems that go beyond implementing endpoints.
-
-Some areas I have been working with:
-
-* Idempotent processing
-* Background jobs
-* Batch processing
-* Failure isolation
-* Database migrations
-* Data integrity
-* File hashing
-* Automated backup
-* Secure retention
-* Parser reliability
-* Production debugging
-* CORS
-* DNS
-* Docker networking
-* CI/build validation
-* Logging
-* Authentication
-* Authorization
-* Software releases
-
----
-
-# 🏆 Recognition
-
-| 🏅 Recognition                                 | 🚀 Project / Challenge              |
-| ---------------------------------------------- | ----------------------------------- |
-| 🏆 **Winner — Ideathon SESCAP LDR**            | Technology and innovation challenge |
-| 🏆 **Winner — Hackathon SmartCities Londrina** | Innovation and impact in tourism    |
-
----
-
-# 🎓 Education
-
-### Software Engineering
-
-**UniFil — Centro Universitário Filadélfia**
-
-```text
-2025 ─────────────────────────────── 2028
-                                      ▲
-                              Expected graduation
-```
-
-Academic activities:
-
-* Member of **NPI — Núcleo de Práticas em Informática**
-* Member of the **Artificial Intelligence Group**
-* Monitor at **Londrinense Tech**
-* Monitor in **Computational Thinking**
-
----
-
-# 📚 Certifications & Courses
-
-```text
-✔ CPRE-FL
-✔ Prompt Engineering — Digital Innovation One
-◉ Java Complete — Object-Oriented Programming
-◉ Web Front-end Programming Fundamentals
-```
-
----
-
-# 🎯 Current Objectives
-
-```bash
-> Loading current objectives...
-
-[██████████] Backend Engineering
-[█████████░] REST APIs + PostgreSQL
-[█████████░] Python + FastAPI
-[████████░░] Java + Spring Boot
-[████████░░] Full Stack Development
-[███████░░░] Docker + DevOps
-[██████░░░░] Software Architecture
-
-FOCUS:
-Backend Development ⚙️
-
-LEARNING:
-Scalable systems
-Clean Architecture
-Software Architecture
-Cloud & DevOps
-Distributed processing
-
-NEXT LEVEL:
-Building reliable software that solves real business problems 🚀
-```
-
----
-
-```text
-                         __
-                       .'  '.
-                      /      \
-                 _.-'          '-._
-              .-'                  '-.
-            .'                        '.
-           /                            \
-          /                              \
-         /                                \
-        /                                  \
-       /____________________________________\
-                     \    /
-                      \  /
-                       \/
-
-              KEEP BUILDING. KEEP LEARNING.
-```
-
----
+## ⚡ Tech Stack
 
 <div align="center">
 
-### Felipe Marin Silva
+![Python](https://img.shields.io/badge/Python-000000?style=for-the-badge\&logo=python\&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-000000?style=for-the-badge\&logo=fastapi\&logoColor=white)
+![Java](https://img.shields.io/badge/Java-000000?style=for-the-badge\&logo=openjdk\&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-000000?style=for-the-badge\&logo=springboot\&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-000000?style=for-the-badge\&logo=postgresql\&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-000000?style=for-the-badge\&logo=docker\&logoColor=white)
 
-**Back-end Developer @ Contabiliza**
+![React](https://img.shields.io/badge/React-000000?style=for-the-badge\&logo=react\&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-000000?style=for-the-badge\&logo=typescript\&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-000000?style=for-the-badge\&logo=javascript\&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge\&logo=nextdotjs\&logoColor=white)
+![Git](https://img.shields.io/badge/Git-000000?style=for-the-badge\&logo=git\&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-000000?style=for-the-badge\&logo=github\&logoColor=white)
 
-Software Engineering · Backend · Automation · APIs
+</div>
 
-`Python` · `FastAPI` · `Java` · `Spring Boot` · `PostgreSQL` · `Docker`
+---
+
+## 🚀 Featured Projects
+
+| Project                       | Description                                                                     | Stack                                   |
+| ----------------------------- | ------------------------------------------------------------------------------- | --------------------------------------- |
+| **Fiscal PDF Hub**            | Plataforma interna para processamento, validação e gestão de documentos fiscais | FastAPI · PostgreSQL · React · Docker   |
+| **PGDAS-D Report Automation** | Automação da leitura de PGDAS-D e geração de relatórios do Simples Nacional     | Next.js · TypeScript · FastAPI · Python |
+| **EnergyTracker**             | Solução para monitoramento inteligente de energia em tempo real                 | Software Engineering                    |
+| **SafeAI**                    | Plataforma para gestão de apólices no setor de seguros                          | Software Engineering                    |
+
+---
+
+## 🏆 Recognition
+
+* 🥇 **Winner — Ideathon SESCAP LDR**
+* 🥇 **Winner — Hackathon SmartCities Londrina**
+
+---
+
+## 🧠 Current Mission
+
+```bash
+> Loading objectives...
+
+[██████████] Backend Development
+[█████████░] REST APIs + PostgreSQL
+[████████░░] Java + Spring Boot
+[████████░░] Docker + DevOps
+[███████░░░] Software Architecture
+
+STATUS:
+Keep building. Keep learning. 🚀
+```
+
+---
+
+## 📊 GitHub Analytics
+
+<div align="center">
+
+<img height="165" src="https://github-readme-stats.vercel.app/api?username=FelipeMarin-08&show_icons=true&hide_border=true&bg_color=000000&title_color=ffffff&text_color=ffffff&icon_color=ffffff"/>
+
+<img height="165" src="https://github-readme-stats.vercel.app/api/top-langs/?username=FelipeMarin-08&layout=compact&hide_border=true&bg_color=000000&title_color=ffffff&text_color=ffffff"/>
+
+</div>
+
+---
+
+## 🌎 Connect With Me
+
+<div align="center">
+
+<a href="https://github.com/FelipeMarin-08">
+<img src="https://img.shields.io/badge/GitHub-000000?style=for-the-badge&logo=github&logoColor=white"/>
+</a>
+
+<a href="https://linkedin.com/in/felipemarinsilva">
+<img src="https://img.shields.io/badge/LinkedIn-000000?style=for-the-badge&logo=linkedin&logoColor=white"/>
+</a>
+
+</div>
+
+<br>
+
+<div align="center">
+
+**Back-end Development · APIs · Automation · Software Engineering**
 
 </div>
