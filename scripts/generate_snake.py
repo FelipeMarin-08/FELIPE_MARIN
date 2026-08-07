@@ -1,5 +1,6 @@
 import json
 import os
+import random
 import urllib.request
 
 from collections import deque
@@ -8,8 +9,19 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 
-USERNAME = os.getenv("GITHUB_USERNAME", "FelipeMarin-08")
-TOKEN = os.getenv("GITHUB_TOKEN", "")
+# =========================================================
+# CONFIGURAÇÃO
+# =========================================================
+
+USERNAME = os.getenv(
+    "GITHUB_USERNAME",
+    "FelipeMarin-08",
+)
+
+TOKEN = os.getenv(
+    "GITHUB_TOKEN",
+    "",
+)
 
 OUTPUT = Path(
     os.getenv(
@@ -23,24 +35,28 @@ OUTPUT = Path(
 # VISUAL
 # =========================================================
 
+# GitHub Dark
 BACKGROUND = "#161b22"
+
 GRID_EMPTY = "#30363d"
 GRID_BORDER = "#484f58"
 
-FOOD_BASE = "#ff0000"
-FOOD_BORDER = "#ff4d4d"
+# Contribuições
+CONTRIBUTION_RED = "#ff0000"
 
+# Cobra
 SNAKE = "#ffffff"
 SNAKE_HEAD = "#ffffff"
 
-BAR_BG = "#0d1117"
+# Barra de progresso
+BAR_BACKGROUND = "#21262d"
 BAR_BORDER = "#484f58"
 BAR_FILL = "#ff0000"
 TEXT_COLOR = "#c9d1d9"
 
 
 # =========================================================
-# GRID
+# TAMANHOS
 # =========================================================
 
 CELL = 11
@@ -54,18 +70,33 @@ DAYS = 7
 
 FRAME_DURATION = 65
 
-BAR_HEIGHT = 12
+BAR_HEIGHT = 11
 BAR_MARGIN_TOP = 18
-TEXT_MARGIN_TOP = 10
-BOTTOM_PADDING = 20
+TEXT_MARGIN_TOP = 8
+BOTTOM_PADDING = 22
 
 
 # =========================================================
-# POSIÇÃO INICIAL
+# CONTRIBUIÇÕES SIMULADAS
+# =========================================================
+
+# Adiciona mais quadrados vermelhos para deixar
+# o mapa visualmente mais preenchido.
+EXTRA_CONTRIBUTION_RATIO = 0.65
+EXTRA_CONTRIBUTION_MIN = 30
+EXTRA_CONTRIBUTION_MAX = 70
+
+
+# =========================================================
+# POSIÇÃO INICIAL DA COBRA
 # =========================================================
 
 START_Y = DAYS // 2
-START_HEAD = (-1, START_Y)
+
+START_HEAD = (
+    -1,
+    START_Y,
+)
 
 INITIAL_BODY = [
     (-4, START_Y),
@@ -76,72 +107,67 @@ INITIAL_BODY = [
 
 
 # =========================================================
-# HELPERS DE COR
+# CORES
 # =========================================================
 
 def hex_to_rgb(hex_color):
     hex_color = hex_color.lstrip("#")
+
     return tuple(
-        int(hex_color[i:i+2], 16)
+        int(hex_color[i:i + 2], 16)
         for i in (0, 2, 4)
     )
 
 
 def rgb_to_hex(rgb):
-    return "#{:02x}{:02x}{:02x}".format(*rgb)
-
-
-def blend_hex(background, foreground, alpha):
-    br, bg, bb = hex_to_rgb(background)
-    fr, fg, fb = hex_to_rgb(foreground)
-
-    r = round(br * (1 - alpha) + fr * alpha)
-    g = round(bg * (1 - alpha) + fg * alpha)
-    b = round(bb * (1 - alpha) + fb * alpha)
-
-    return rgb_to_hex((r, g, b))
-
-
-def build_contribution_levels(contributions):
-    values = sorted(
-        count for count in contributions.values()
-        if count > 0
-    )
-
-    if not values:
-        return (1, 1, 1)
-
-    def percentile(p):
-        idx = int((len(values) - 1) * p)
-        return values[idx]
-
-    return (
-        percentile(0.25),
-        percentile(0.50),
-        percentile(0.75),
+    return "#{:02x}{:02x}{:02x}".format(
+        *rgb
     )
 
 
-def contribution_fill_color(count, levels):
-    q1, q2, q3 = levels
+def blend_hex(
+    background,
+    foreground,
+    alpha,
+):
+    br, bg, bb = hex_to_rgb(
+        background
+    )
 
-    if count <= q1:
-        alpha = 0.35
-    elif count <= q2:
-        alpha = 0.55
-    elif count <= q3:
-        alpha = 0.78
-    else:
-        alpha = 1.00
+    fr, fg, fb = hex_to_rgb(
+        foreground
+    )
 
-    return blend_hex(BACKGROUND, FOOD_BASE, alpha)
+    red = round(
+        br * (1 - alpha)
+        + fr * alpha
+    )
+
+    green = round(
+        bg * (1 - alpha)
+        + fg * alpha
+    )
+
+    blue = round(
+        bb * (1 - alpha)
+        + fb * alpha
+    )
+
+    return rgb_to_hex(
+        (
+            red,
+            green,
+            blue,
+        )
+    )
 
 
 # =========================================================
-# API GITHUB
+# API DO GITHUB
 # =========================================================
 
 def fetch_contributions():
+
     query = """
     query($login: String!) {
       user(login: $login) {
@@ -172,56 +198,457 @@ def fetch_contributions():
         "https://api.github.com/graphql",
         data=body,
         headers={
-            "Authorization": f"Bearer {TOKEN}",
-            "Content-Type": "application/json",
-            "User-Agent": "FelipeMarin-Contribution-Snake",
+            "Authorization": (
+                f"Bearer {TOKEN}"
+            ),
+            "Content-Type": (
+                "application/json"
+            ),
+            "User-Agent": (
+                "FelipeMarin-Contribution-Snake"
+            ),
         },
         method="POST",
     )
 
-    with urllib.request.urlopen(request, timeout=30) as response:
-        payload = json.load(response)
+    with urllib.request.urlopen(
+        request,
+        timeout=30,
+    ) as response:
+
+        payload = json.load(
+            response
+        )
 
     if "errors" in payload:
-        raise RuntimeError(payload["errors"])
+
+        raise RuntimeError(
+            payload["errors"]
+        )
 
     weeks = (
-        payload["data"]["user"]["contributionsCollection"]
-        ["contributionCalendar"]["weeks"]
+        payload["data"]
+        ["user"]
+        ["contributionsCollection"]
+        ["contributionCalendar"]
+        ["weeks"]
     )
 
-    weeks = weeks[-WEEKS:]
+    weeks = weeks[
+        -WEEKS:
+    ]
 
-    contribution_cells = {}
+    contributions = {}
 
-    offset = WEEKS - len(weeks)
+    offset = (
+        WEEKS
+        - len(weeks)
+    )
 
-    for x, week in enumerate(weeks, start=offset):
-        for day in week["contributionDays"]:
-            count = int(day["contributionCount"])
+    for x, week in enumerate(
+        weeks,
+        start=offset,
+    ):
+
+        for day in week[
+            "contributionDays"
+        ]:
+
+            count = int(
+                day[
+                    "contributionCount"
+                ]
+            )
 
             if count > 0:
-                contribution_cells[
-                    (x, int(day["weekday"]))
+
+                contributions[
+                    (
+                        x,
+                        int(
+                            day[
+                                "weekday"
+                            ]
+                        ),
+                    )
                 ] = count
 
-    return contribution_cells
+    return contributions
 
 
 # =========================================================
-# DESENHO
+# CONTRIBUIÇÕES EXTRAS
+# =========================================================
+
+def augment_contributions(
+    real_contributions,
+):
+
+    # Seed fixa:
+    # as posições extras não ficam
+    # mudando toda vez que o Actions roda.
+    rng = random.Random(
+        f"{USERNAME}-github-snake-v3"
+    )
+
+    contributions = dict(
+        real_contributions
+    )
+
+    simulated = set()
+
+    occupied = set(
+        contributions.keys()
+    )
+
+    real_count = len(
+        real_contributions
+    )
+
+    target_extra = int(
+        real_count
+        * EXTRA_CONTRIBUTION_RATIO
+    )
+
+    target_extra = max(
+        target_extra,
+        EXTRA_CONTRIBUTION_MIN,
+    )
+
+    target_extra = min(
+        target_extra,
+        EXTRA_CONTRIBUTION_MAX,
+    )
+
+    available_count = (
+        WEEKS * DAYS
+        - len(occupied)
+    )
+
+    target_extra = min(
+        target_extra,
+        available_count,
+    )
+
+    # =====================================================
+    # PRIMEIRO COLOCA CONTRIBUIÇÕES
+    # PRÓXIMAS DAS CONTRIBUIÇÕES REAIS
+    # =====================================================
+
+    candidates = []
+
+    if occupied:
+
+        for x, y in list(
+            occupied
+        ):
+
+            for dx in (
+                -3,
+                -2,
+                -1,
+                0,
+                1,
+                2,
+                3,
+            ):
+
+                for dy in (
+                    -2,
+                    -1,
+                    0,
+                    1,
+                    2,
+                ):
+
+                    if (
+                        dx == 0
+                        and dy == 0
+                    ):
+                        continue
+
+                    nx = x + dx
+                    ny = y + dy
+
+                    if not (
+                        0 <= nx < WEEKS
+                        and
+                        0 <= ny < DAYS
+                    ):
+                        continue
+
+                    cell = (
+                        nx,
+                        ny,
+                    )
+
+                    if (
+                        cell
+                        not in occupied
+                    ):
+
+                        candidates.append(
+                            cell
+                        )
+
+    # Remove duplicados
+    candidates = list(
+        dict.fromkeys(
+            candidates
+        )
+    )
+
+    rng.shuffle(
+        candidates
+    )
+
+    # =====================================================
+    # CRIA CONTRIBUIÇÕES FRACAS
+    # =====================================================
+
+    for cell in candidates:
+
+        if (
+            len(simulated)
+            >= target_extra
+        ):
+            break
+
+        if cell in occupied:
+            continue
+
+        # A maioria recebe valor baixo
+        # para ficar mais transparente.
+        fake_count = rng.choice(
+            [
+                1,
+                1,
+                1,
+                1,
+                1,
+                2,
+                2,
+                2,
+                3,
+                3,
+                4,
+            ]
+        )
+
+        contributions[
+            cell
+        ] = fake_count
+
+        simulated.add(
+            cell
+        )
+
+        occupied.add(
+            cell
+        )
+
+    # =====================================================
+    # SE AINDA FALTAR, ESPALHA PELO GRID
+    # =====================================================
+
+    if (
+        len(simulated)
+        < target_extra
+    ):
+
+        available = [
+            (
+                x,
+                y,
+            )
+            for x in range(
+                WEEKS
+            )
+            for y in range(
+                DAYS
+            )
+            if (
+                x,
+                y,
+            )
+            not in occupied
+        ]
+
+        rng.shuffle(
+            available
+        )
+
+        needed = (
+            target_extra
+            - len(simulated)
+        )
+
+        for cell in available[
+            :needed
+        ]:
+
+            fake_count = rng.choice(
+                [
+                    1,
+                    1,
+                    1,
+                    2,
+                    2,
+                    3,
+                ]
+            )
+
+            contributions[
+                cell
+            ] = fake_count
+
+            simulated.add(
+                cell
+            )
+
+            occupied.add(
+                cell
+            )
+
+    return (
+        contributions,
+        simulated,
+    )
+
+
+# =========================================================
+# INTENSIDADE DAS CONTRIBUIÇÕES
+# =========================================================
+
+def build_contribution_levels(
+    contributions,
+    simulated,
+):
+
+    real_values = sorted(
+        count
+        for cell, count
+        in contributions.items()
+        if cell not in simulated
+    )
+
+    if not real_values:
+
+        real_values = sorted(
+            contributions.values()
+        )
+
+    if not real_values:
+
+        return (
+            1,
+            2,
+            3,
+        )
+
+    def percentile(
+        percentage,
+    ):
+
+        index = int(
+            (
+                len(real_values)
+                - 1
+            )
+            * percentage
+        )
+
+        return real_values[
+            index
+        ]
+
+    return (
+        percentile(0.25),
+        percentile(0.50),
+        percentile(0.75),
+    )
+
+
+def contribution_fill_color(
+    count,
+    levels,
+    is_simulated=False,
+):
+
+    # =====================================================
+    # CONTRIBUIÇÕES SIMULADAS
+    # =====================================================
+
+    if is_simulated:
+
+        if count <= 1:
+            alpha = 0.16
+
+        elif count == 2:
+            alpha = 0.24
+
+        elif count == 3:
+            alpha = 0.32
+
+        else:
+            alpha = 0.40
+
+    # =====================================================
+    # CONTRIBUIÇÕES REAIS
+    # =====================================================
+
+    else:
+
+        q1, q2, q3 = levels
+
+        if count <= q1:
+            alpha = 0.35
+
+        elif count <= q2:
+            alpha = 0.55
+
+        elif count <= q3:
+            alpha = 0.75
+
+        else:
+            alpha = 1.00
+
+    # Simula transparência misturando
+    # o vermelho com a cor da célula vazia.
+    return blend_hex(
+        GRID_EMPTY,
+        CONTRIBUTION_RED,
+        alpha,
+    )
+
+
+# =========================================================
+# DIMENSÕES
 # =========================================================
 
 def grid_width():
-    return WEEKS * CELL + (WEEKS - 1) * GAP
+
+    return (
+        WEEKS * CELL
+        + (WEEKS - 1) * GAP
+    )
 
 
 def grid_height():
-    return DAYS * CELL + (DAYS - 1) * GAP
+
+    return (
+        DAYS * CELL
+        + (DAYS - 1) * GAP
+    )
 
 
 def canvas_size():
-    width = MARGIN_X + grid_width() + 25
+
+    width = (
+        MARGIN_X
+        + grid_width()
+        + 25
+    )
 
     height = (
         MARGIN_Y
@@ -233,20 +660,58 @@ def canvas_size():
         + BOTTOM_PADDING
     )
 
-    return width, height
+    return (
+        width,
+        height,
+    )
 
 
-def cell_position(cell):
+# =========================================================
+# POSIÇÃO DAS CÉLULAS
+# =========================================================
+
+def cell_position(
+    cell,
+):
+
     x, y = cell
 
-    px = MARGIN_X + x * (CELL + GAP)
-    py = MARGIN_Y + y * (CELL + GAP)
+    px = (
+        MARGIN_X
+        + x
+        * (
+            CELL
+            + GAP
+        )
+    )
 
-    return px, py
+    py = (
+        MARGIN_Y
+        + y
+        * (
+            CELL
+            + GAP
+        )
+    )
+
+    return (
+        px,
+        py,
+    )
 
 
-def draw_cell(draw, cell, fill, outline=None, radius=2, inset=0):
-    x, y = cell_position(cell)
+def draw_cell(
+    draw,
+    cell,
+    fill,
+    outline=None,
+    radius=2,
+    inset=0,
+):
+
+    x, y = cell_position(
+        cell
+    )
 
     draw.rounded_rectangle(
         [
@@ -255,42 +720,106 @@ def draw_cell(draw, cell, fill, outline=None, radius=2, inset=0):
             x + CELL - 1 - inset,
             y + CELL - 1 - inset,
         ],
-        radius=max(1, radius - inset),
+        radius=max(
+            1,
+            radius - inset,
+        ),
         fill=fill,
         outline=outline,
     )
 
 
-def draw_progress_bar(draw, eaten_count, total_count):
+# =========================================================
+# BARRA DE PROGRESSO
+# =========================================================
+
+def draw_progress_bar(
+    draw,
+    eaten_count,
+    total_count,
+):
+
     bar_x = MARGIN_X
-    bar_y = MARGIN_Y + grid_height() + BAR_MARGIN_TOP
-    bar_w = grid_width()
-    bar_h = BAR_HEIGHT
 
-    progress = 1 if total_count == 0 else eaten_count / total_count
-    fill_w = int(bar_w * progress)
+    bar_y = (
+        MARGIN_Y
+        + grid_height()
+        + BAR_MARGIN_TOP
+    )
 
+    bar_width = grid_width()
+
+    if total_count == 0:
+
+        progress = 1.0
+
+    else:
+
+        progress = (
+            eaten_count
+            / total_count
+        )
+
+    progress = max(
+        0.0,
+        min(
+            progress,
+            1.0,
+        ),
+    )
+
+    fill_width = int(
+        bar_width
+        * progress
+    )
+
+    # Fundo
     draw.rounded_rectangle(
-        [bar_x, bar_y, bar_x + bar_w, bar_y + bar_h],
+        [
+            bar_x,
+            bar_y,
+            bar_x + bar_width,
+            bar_y + BAR_HEIGHT,
+        ],
         radius=4,
-        fill=BAR_BG,
+        fill=BAR_BACKGROUND,
         outline=BAR_BORDER,
     )
 
-    if fill_w > 0:
+    # Parte preenchida
+    if fill_width > 0:
+
         draw.rounded_rectangle(
-            [bar_x, bar_y, bar_x + fill_w, bar_y + bar_h],
+            [
+                bar_x,
+                bar_y,
+                bar_x + fill_width,
+                bar_y + BAR_HEIGHT,
+            ],
             radius=4,
             fill=BAR_FILL,
         )
 
-    text = f"Progress: {eaten_count}/{total_count} • {int(progress * 100)}%"
+    percentage = int(
+        progress
+        * 100
+    )
+
+    text = (
+        f"Contributions collected: "
+        f"{eaten_count}/{total_count} "
+        f"• {percentage}%"
+    )
 
     font = ImageFont.load_default()
-    text_y = bar_y + bar_h + TEXT_MARGIN_TOP
 
     draw.text(
-        (bar_x, text_y),
+        (
+            bar_x,
+            bar_y
+            + BAR_HEIGHT
+            + TEXT_MARGIN_TOP,
+        ),
         text,
         fill=TEXT_COLOR,
         font=font,
@@ -301,116 +830,373 @@ def draw_progress_bar(draw, eaten_count, total_count):
 # PATHFINDING
 # =========================================================
 
+# A ordem das direções muda para
+# deixar os trajetos menos repetitivos.
 DIRECTION_ORDERS = [
-    [(1, 0), (0, -1), (0, 1), (-1, 0)],
-    [(0, 1), (1, 0), (-1, 0), (0, -1)],
-    [(-1, 0), (0, 1), (0, -1), (1, 0)],
-    [(0, -1), (-1, 0), (1, 0), (0, 1)],
+
+    [
+        (1, 0),
+        (0, -1),
+        (0, 1),
+        (-1, 0),
+    ],
+
+    [
+        (0, 1),
+        (1, 0),
+        (-1, 0),
+        (0, -1),
+    ],
+
+    [
+        (-1, 0),
+        (0, 1),
+        (0, -1),
+        (1, 0),
+    ],
+
+    [
+        (0, -1),
+        (-1, 0),
+        (1, 0),
+        (0, 1),
+    ],
 ]
 
 
-def is_valid_position(cell):
+def is_valid_position(
+    cell,
+    minimum_x=-1,
+):
+
     x, y = cell
-    return -1 <= x < WEEKS and 0 <= y < DAYS
+
+    return (
+        minimum_x
+        <= x
+        < WEEKS
+        and
+        0
+        <= y
+        < DAYS
+    )
 
 
-def reconstruct_path(parents, target):
+def reconstruct_path(
+    parents,
+    target,
+):
+
     path = []
+
     current = target
 
-    while current is not None:
-        path.append(current)
-        current = parents[current]
+    while (
+        current
+        is not None
+    ):
+
+        path.append(
+            current
+        )
+
+        current = parents[
+            current
+        ]
 
     path.reverse()
+
     return path
 
 
-def bfs_path(start, targets, blocked, direction_index):
-    directions = DIRECTION_ORDERS[
-        direction_index % len(DIRECTION_ORDERS)
-    ]
+def find_nearest_food_path(
+    start,
+    foods,
+    blocked,
+    direction_index,
+):
 
-    queue = deque([start])
-    parents = {start: None}
+    if not foods:
 
-    blocked = set(blocked)
-    blocked.discard(start)
+        return None
+
+    directions = (
+        DIRECTION_ORDERS[
+            direction_index
+            % len(
+                DIRECTION_ORDERS
+            )
+        ]
+    )
+
+    queue = deque(
+        [
+            start,
+        ]
+    )
+
+    parents = {
+        start: None,
+    }
+
+    blocked = set(
+        blocked
+    )
+
+    blocked.discard(
+        start
+    )
 
     while queue:
+
         current = queue.popleft()
 
-        if current in targets and current != start:
-            return reconstruct_path(parents, current)
+        if (
+            current in foods
+            and
+            current != start
+        ):
+
+            return reconstruct_path(
+                parents,
+                current,
+            )
 
         for dx, dy in directions:
-            nxt = (current[0] + dx, current[1] + dy)
 
-            if not is_valid_position(nxt):
+            next_cell = (
+                current[0] + dx,
+                current[1] + dy,
+            )
+
+            if not is_valid_position(
+                next_cell
+            ):
                 continue
 
-            if nxt in parents:
+            if (
+                next_cell
+                in parents
+            ):
                 continue
 
-            if nxt in blocked:
+            if (
+                next_cell
+                in blocked
+            ):
                 continue
 
-            parents[nxt] = current
-            queue.append(nxt)
+            parents[
+                next_cell
+            ] = current
+
+            queue.append(
+                next_cell
+            )
 
     return None
 
 
-def bfs_path_to_target(start, target, blocked, direction_index):
-    return bfs_path(
-        start,
-        {target},
-        blocked,
-        direction_index,
+def find_path_to_target(
+    start,
+    target,
+    blocked,
+    direction_index,
+    minimum_x=-1,
+):
+
+    if start == target:
+
+        return [
+            start,
+        ]
+
+    directions = (
+        DIRECTION_ORDERS[
+            direction_index
+            % len(
+                DIRECTION_ORDERS
+            )
+        ]
     )
+
+    queue = deque(
+        [
+            start,
+        ]
+    )
+
+    parents = {
+        start: None,
+    }
+
+    blocked = set(
+        blocked
+    )
+
+    blocked.discard(
+        start
+    )
+
+    blocked.discard(
+        target
+    )
+
+    while queue:
+
+        current = queue.popleft()
+
+        if (
+            current
+            == target
+        ):
+
+            return reconstruct_path(
+                parents,
+                current,
+            )
+
+        for dx, dy in directions:
+
+            next_cell = (
+                current[0] + dx,
+                current[1] + dy,
+            )
+
+            if not is_valid_position(
+                next_cell,
+                minimum_x=minimum_x,
+            ):
+                continue
+
+            if (
+                next_cell
+                in parents
+            ):
+                continue
+
+            if (
+                next_cell
+                in blocked
+            ):
+                continue
+
+            parents[
+                next_cell
+            ] = current
+
+            queue.append(
+                next_cell
+            )
+
+    return None
 
 
 # =========================================================
 # FRAME
 # =========================================================
 
-def create_frame(contributions, eaten, snake, levels):
+def create_frame(
+    contributions,
+    simulated,
+    eaten,
+    snake,
+    levels,
+):
+
     width, height = canvas_size()
 
-    image = Image.new("RGB", (width, height), BACKGROUND)
-    draw = ImageDraw.Draw(image)
+    image = Image.new(
+        "RGB",
+        (
+            width,
+            height,
+        ),
+        BACKGROUND,
+    )
 
-    # Grid cinza
-    for y in range(DAYS):
-        for x in range(WEEKS):
+    draw = ImageDraw.Draw(
+        image
+    )
+
+    # =====================================================
+    # GRID CINZA
+    # =====================================================
+
+    for y in range(
+        DAYS
+    ):
+
+        for x in range(
+            WEEKS
+        ):
+
             draw_cell(
                 draw,
-                (x, y),
+                (
+                    x,
+                    y,
+                ),
                 GRID_EMPTY,
                 outline=GRID_BORDER,
                 radius=2,
             )
 
-    # Contribuições vermelhas com intensidades diferentes
-    for cell, count in contributions.items():
+    # =====================================================
+    # CONTRIBUIÇÕES
+    # =====================================================
+
+    for (
+        cell,
+        count,
+    ) in contributions.items():
+
         if cell in eaten:
             continue
 
+        color = contribution_fill_color(
+            count,
+            levels,
+            is_simulated=(
+                cell in simulated
+            ),
+        )
+
+        # Preenche o quadrado inteiro,
+        # igual ao gráfico do GitHub.
         draw_cell(
             draw,
             cell,
-            contribution_fill_color(count, levels),
-            outline=FOOD_BORDER,
+            color,
+            outline=color,
             radius=2,
         )
 
-    # Corpo da cobra
-    snake_list = list(snake)
+    # =====================================================
+    # COBRA
+    # =====================================================
 
-    for segment in snake_list[:-1]:
+    snake_list = list(
+        snake
+    )
+
+    # Corpo
+    for segment in snake_list[
+        :-1
+    ]:
+
         sx, sy = segment
 
-        if -4 <= sx < WEEKS and 0 <= sy < DAYS:
+        if (
+            -4
+            <= sx
+            < WEEKS
+            and
+            0
+            <= sy
+            < DAYS
+        ):
+
             draw_cell(
                 draw,
                 segment,
@@ -420,29 +1206,60 @@ def create_frame(contributions, eaten, snake, levels):
             )
 
     # Cabeça
-    hx, hy = snake_list[-1]
+    if snake_list:
 
-    if -4 <= hx < WEEKS and 0 <= hy < DAYS:
-        draw_cell(
-            draw,
-            (hx, hy),
-            SNAKE_HEAD,
-            radius=4,
-        )
+        head = snake_list[
+            -1
+        ]
 
-    draw_progress_bar(draw, len(eaten), len(contributions))
+        hx, hy = head
+
+        if (
+            -4
+            <= hx
+            < WEEKS
+            and
+            0
+            <= hy
+            < DAYS
+        ):
+
+            draw_cell(
+                draw,
+                head,
+                SNAKE_HEAD,
+                radius=4,
+            )
+
+    # =====================================================
+    # PROGRESSO
+    # =====================================================
+
+    draw_progress_bar(
+        draw,
+        len(eaten),
+        len(contributions),
+    )
 
     return image
 
 
 # =========================================================
-# MOVIMENTO
+# MOVIMENTO DA COBRA
 # =========================================================
 
-def move_snake(snake, next_head, grow):
-    snake.append(next_head)
+def move_snake(
+    snake,
+    next_head,
+    grow=False,
+):
+
+    snake.append(
+        next_head
+    )
 
     if not grow:
+
         snake.popleft()
 
 
@@ -450,116 +1267,362 @@ def move_snake(snake, next_head, grow):
 # ANIMAÇÃO
 # =========================================================
 
-def generate_animation(contributions):
-    snake = deque(INITIAL_BODY)
+def generate_animation(
+    contributions,
+    simulated,
+):
+
+    snake = deque(
+        INITIAL_BODY
+    )
+
     eaten = set()
-    remaining = set(contributions.keys())
-    levels = build_contribution_levels(contributions)
+
+    eaten_order = []
+
+    remaining = set(
+        contributions.keys()
+    )
+
+    levels = (
+        build_contribution_levels(
+            contributions,
+            simulated,
+        )
+    )
 
     frames = []
 
-    # Pequena pausa inicial
-    first_frame = create_frame(contributions, eaten, snake, levels)
-    frames.extend([first_frame] * 4)
+    # =====================================================
+    # FRAME INICIAL
+    # =====================================================
+
+    frames.append(
+        create_frame(
+            contributions,
+            simulated,
+            eaten,
+            snake,
+            levels,
+        )
+    )
 
     route_number = 0
 
-    # Come todas as contribuições
+    # =====================================================
+    # BUSCA AS CONTRIBUIÇÕES
+    # =====================================================
+
     while remaining:
-        head = snake[-1]
 
-        blocked = set(snake)
-        blocked.discard(head)
+        head = snake[
+            -1
+        ]
 
-        path = bfs_path(
-            head,
-            remaining,
-            blocked,
-            route_number,
+        blocked = set(
+            snake
         )
 
-        if path is None:
-            path = bfs_path(
+        blocked.discard(
+            head
+        )
+
+        path = (
+            find_nearest_food_path(
                 head,
                 remaining,
-                set(),
+                blocked,
                 route_number,
+            )
+        )
+
+        # Se o corpo bloquear todo o caminho,
+        # permite encontrar uma rota alternativa.
+        if path is None:
+
+            path = (
+                find_nearest_food_path(
+                    head,
+                    remaining,
+                    set(),
+                    route_number,
+                )
             )
 
         if path is None:
+
             raise RuntimeError(
-                "Não foi possível encontrar caminho até uma contribuição."
+                "Não foi possível encontrar "
+                "caminho até uma contribuição."
             )
 
-        for next_head in path[1:]:
-            grow = next_head in remaining
+        # =================================================
+        # PERCORRE O CAMINHO
+        # =================================================
 
-            move_snake(snake, next_head, grow)
+        for next_head in path[
+            1:
+        ]:
+
+            grow = (
+                next_head
+                in remaining
+            )
+
+            move_snake(
+                snake,
+                next_head,
+                grow=grow,
+            )
 
             if grow:
-                remaining.remove(next_head)
-                eaten.add(next_head)
+
+                remaining.remove(
+                    next_head
+                )
+
+                eaten.add(
+                    next_head
+                )
+
+                eaten_order.append(
+                    next_head
+                )
 
             frames.append(
-                create_frame(contributions, eaten, snake, levels)
+                create_frame(
+                    contributions,
+                    simulated,
+                    eaten,
+                    snake,
+                    levels,
+                )
             )
 
         route_number += 1
 
-    # Volta ao ponto inicial com fluxo contínuo
-    head = snake[-1]
+    # =====================================================
+    # VOLTA PARA A ÁREA INICIAL
+    # =====================================================
 
-    blocked = set(snake)
-    blocked.discard(head)
+    head = snake[
+        -1
+    ]
 
-    return_path = bfs_path_to_target(
-        head,
-        START_HEAD,
-        blocked,
-        route_number,
+    blocked = set(
+        snake
     )
 
-    if return_path is None:
-        return_path = bfs_path_to_target(
+    blocked.discard(
+        head
+    )
+
+    parking_target = (
+        -4,
+        START_Y,
+    )
+
+    return_path = (
+        find_path_to_target(
             head,
-            START_HEAD,
-            set(),
+            parking_target,
+            blocked,
             route_number,
+            minimum_x=-4,
+        )
+    )
+
+    # Caso o próprio corpo impeça
+    # completamente a rota.
+    if return_path is None:
+
+        return_path = (
+            find_path_to_target(
+                head,
+                parking_target,
+                set(),
+                route_number,
+                minimum_x=-4,
+            )
         )
 
     if return_path is None:
+
         raise RuntimeError(
-            "Não foi possível retornar ao ponto inicial."
+            "Não foi possível retornar "
+            "para a posição inicial."
         )
 
-    for next_head in return_path[1:]:
-        move_snake(snake, next_head, grow=False)
+    # =====================================================
+    # CAMINHO DE VOLTA
+    # =====================================================
+
+    for next_head in return_path[
+        1:
+    ]:
+
+        move_snake(
+            snake,
+            next_head,
+            grow=False,
+        )
 
         frames.append(
-            create_frame(contributions, eaten, snake, levels)
+            create_frame(
+                contributions,
+                simulated,
+                eaten,
+                snake,
+                levels,
+            )
         )
 
-    # Não trava no final.
-    # Em vez de congelar, só faz uma pausa bem curta
-    # para o loop não parecer brusco.
-    frames.extend([frames[-1]] * 2)
+    # =====================================================
+    # ENCAIXA A COBRA EXATAMENTE
+    # NA POSIÇÃO INICIAL
+    # =====================================================
 
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    parking_approach = [
+        (-3, START_Y),
+        (-2, START_Y),
+        (-1, START_Y),
+    ]
+
+    for next_head in parking_approach:
+
+        move_snake(
+            snake,
+            next_head,
+            grow=False,
+        )
+
+        frames.append(
+            create_frame(
+                contributions,
+                simulated,
+                eaten,
+                snake,
+                levels,
+            )
+        )
+
+    # =====================================================
+    # RESET CONTÍNUO
+    #
+    # Cada contribuição reaparece ao mesmo
+    # tempo que a cobra perde um segmento.
+    #
+    # Isso faz o último frame ficar igual
+    # ao primeiro, criando um loop suave.
+    # =====================================================
+
+    reset_order = list(
+        reversed(
+            eaten_order
+        )
+    )
+
+    for cell in reset_order:
+
+        # Diminui a cobra de volta
+        # ao tamanho inicial.
+        if (
+            len(snake)
+            > len(
+                INITIAL_BODY
+            )
+        ):
+
+            snake.popleft()
+
+        # Faz a contribuição reaparecer.
+        eaten.discard(
+            cell
+        )
+
+        frames.append(
+            create_frame(
+                contributions,
+                simulated,
+                eaten,
+                snake,
+                levels,
+            )
+        )
+
+    # =====================================================
+    # GARANTE ESTADO INICIAL
+    # =====================================================
+
+    snake = deque(
+        INITIAL_BODY
+    )
+
+    eaten.clear()
+
+    final_frame = (
+        create_frame(
+            contributions,
+            simulated,
+            eaten,
+            snake,
+            levels,
+        )
+    )
+
+    frames.append(
+        final_frame
+    )
+
+    # =====================================================
+    # SALVA GIF
+    # =====================================================
+
+    OUTPUT.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
     frames[0].save(
         OUTPUT,
         save_all=True,
-        append_images=frames[1:],
+        append_images=frames[
+            1:
+        ],
         duration=FRAME_DURATION,
         loop=0,
         optimize=True,
         disposal=2,
     )
 
-    print(f"Snake generated: {OUTPUT}")
-    print(f"Contribution cells: {len(contributions)}")
-    print(f"Eaten cells: {len(eaten)}")
-    print(f"Returned to start: {snake[-1] == START_HEAD}")
+    print(
+        f"Snake generated: "
+        f"{OUTPUT}"
+    )
+
+    print(
+        f"Real contribution cells: "
+        f"{len(contributions) - len(simulated)}"
+    )
+
+    print(
+        f"Simulated contribution cells: "
+        f"{len(simulated)}"
+    )
+
+    print(
+        f"Total contribution cells: "
+        f"{len(contributions)}"
+    )
+
+    print(
+        f"Frames generated: "
+        f"{len(frames)}"
+    )
+
+    print(
+        "Loop final state: OK"
+    )
 
 
 # =========================================================
@@ -567,8 +1630,25 @@ def generate_animation(contributions):
 # =========================================================
 
 if __name__ == "__main__":
-    if not TOKEN:
-        raise RuntimeError("GITHUB_TOKEN não encontrado.")
 
-    contributions = fetch_contributions()
-    generate_animation(contributions)
+    if not TOKEN:
+
+        raise RuntimeError(
+            "GITHUB_TOKEN não encontrado."
+        )
+
+    real_contributions = (
+        fetch_contributions()
+    )
+
+    (
+        contributions,
+        simulated,
+    ) = augment_contributions(
+        real_contributions
+    )
+
+    generate_animation(
+        contributions,
+        simulated,
+    )
