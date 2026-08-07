@@ -104,7 +104,6 @@ Keep building. Keep learning. 🚀
 <img src="https://raw.githubusercontent.com/FelipeMarin-08/FelipeMarin-08/output/github-contribution-grid-snake.gif" alt="Snake animation"/>
 
 </div>
-
 ---
 
 ## 🌎 Connect With Me
