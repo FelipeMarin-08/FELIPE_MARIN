@@ -27,8 +27,10 @@ jobs:
         uses: Platane/snk@v3
         with:
           github_user_name: ${{ github.repository_owner }}
+
           outputs: |
-            dist/github-contribution-grid-snake.gif?color_snake=#ffffff&color_dots=#000000,#5c0000,#8f0000,#c40000,#ff0000&color_background=#000000
+            dist/github-contribution-grid-snake.gif?color_snake=#ffffff&color_dots=#30363d,#ff0000,#ff0000,#ff0000,#ff0000&color_background=#000000
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
