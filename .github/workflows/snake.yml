@@ -1,4 +1,4 @@
-name: Generate Contribution Snake
+name: Generate Growing Contribution Snake
 
 on:
   schedule:
@@ -14,27 +14,40 @@ permissions:
   contents: write
 
 concurrency:
-  group: contribution-snake
+  group: growing-contribution-snake
   cancel-in-progress: true
 
 jobs:
   generate:
+
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+
+    timeout-minutes: 10
 
     steps:
-      - name: Generate custom contribution snake
-        uses: Platane/snk@v3
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          github_user_name: ${{ github.repository_owner }}
+          python-version: "3.12"
 
-          outputs: |
-            dist/github-contribution-grid-snake.gif?color_snake=#ffffff&color_dots=#30363d,#ff0000,#ff0000,#ff0000,#ff0000&color_background=#000000
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pillow
 
+      - name: Generate growing snake
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_USERNAME: FelipeMarin-08
+          OUTPUT_FILE: dist/github-contribution-snake-grow.gif
+        run: |
+          python scripts/generate_snake.py
 
-      - name: Publish snake to output branch
+      - name: Publish animation
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
